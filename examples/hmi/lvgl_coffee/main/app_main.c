@@ -488,6 +488,37 @@ static void littlevgl_coffee(void)
     create_tab(tab[2], 2, 2, 2); /* Create americano coffee selection tab page */
 }
 
+static void littlevgl_label(void)
+{
+    /*Create a Tab view object*/
+    tabview = lv_tabview_create(lv_scr_act(), NULL);
+    //lv_tabview_set_btns_pos(tabview, LV_TABVIEW_TAB_POS_NONE);
+    lv_obj_set_size(tabview, LV_HOR_RES, LV_VER_RES);
+    lv_obj_set_pos(tabview, 0, 0);
+
+    /*Add 3 tabs (the tabs are page (lv_page) and can be scrolled)*/
+    tab[0] = lv_tabview_add_tab(tabview, "RIS"); /* add RIS tab */
+    tab[1] = lv_tabview_add_tab(tabview, "ESP"); /* add ESP tab */
+    tab[2] = lv_tabview_add_tab(tabview, "AME"); /* add AME tab */
+    lv_tabview_set_anim_time(tabview, 0);
+
+    /*Add content to the tabs*/
+    lv_obj_t *label = lv_label_create(tab[0], NULL);
+    lv_label_set_text(label, "This the first tab\n\n"
+                             "If the content\n"
+                             "of a tab\n"
+                             "become too long\n"
+                             "the it \n"
+                             "automatically\n"
+                             "become\n"
+                             "scrollable.");
+    label = lv_label_create(tab[1], NULL);
+    lv_label_set_text(label, "Second tab");
+
+    label = lv_label_create(tab[2], NULL);
+    lv_label_set_text(label, "Third tab");
+}
+
 /******************************************************************************
  * FunctionName : app_main
  * Description  : entry of user application, init user function here
@@ -514,19 +545,21 @@ void app_main(void)
 
     scr_controller_config_t lcd_cfg = {
         .interface_drv = iface_drv,
-        .pin_num_rst = 18,
-        .pin_num_bckl = 23,
+        .pin_num_rst = 16,   //18,
+        .pin_num_bckl = 6,  //23,
         .rst_active_level = 0,
         .bckl_active_level = 1,
         .offset_hor = 0,
         .offset_ver = 0,
         .width = 240,
         .height = 320,
-        .rotate = SCR_DIR_TBLR,
+        .rotate = SCR_DIR_BTLR, //SCR_DIR_TBLR,
     };
-    scr_find_driver(SCREEN_CONTROLLER_ILI9341, &lcd_drv);
-    lcd_drv.init(&lcd_cfg);
+    //scr_find_driver(SCREEN_CONTROLLER_ILI9341, &lcd_drv);
+    scr_find_driver(SCREEN_CONTROLLER_ST7789, &lcd_drv);
 
+    lcd_drv.init(&lcd_cfg);
+    /*
     touch_panel_config_t touch_cfg = {
         .interface_spi = {
             .spi_bus = spi2_bus,
@@ -541,13 +574,15 @@ void app_main(void)
     };
     touch_panel_find_driver(TOUCH_PANEL_CONTROLLER_XPT2046, &touch_drv);
     touch_drv.init(&touch_cfg);
-    touch_drv.calibration_run(&lcd_drv, false);
+    touch_drv.calibration_run(&lcd_drv, false);*/
 
     /* Initialize LittlevGL GUI */
-    lvgl_init(&lcd_drv, &touch_drv);
+    //lvgl_init(&lcd_drv, &touch_drv);
+    lvgl_init(&lcd_drv);
 
     /* coffee demo */
     littlevgl_coffee();
+    //littlevgl_label();
 
     ESP_LOGI(TAG, "[APP] IDF version: %s", esp_get_idf_version());
     ESP_LOGI(TAG, "[APP] Free memory: %d bytes", esp_get_free_heap_size());
