@@ -514,19 +514,20 @@ void app_main(void)
 
     scr_controller_config_t lcd_cfg = {
         .interface_drv = iface_drv,
-        .pin_num_rst = 18,
-        .pin_num_bckl = 23,
+        .pin_num_rst = 16,   //18,
+        .pin_num_bckl = 6,   //23,
         .rst_active_level = 0,
         .bckl_active_level = 1,
         .offset_hor = 0,
         .offset_ver = 0,
         .width = 240,
         .height = 320,
-        .rotate = SCR_DIR_TBLR,
+        .rotate = SCR_DIR_BTLR,  //SCR_DIR_TBLR,
     };
-    scr_find_driver(SCREEN_CONTROLLER_ILI9341, &lcd_drv);
+    //scr_find_driver(SCREEN_CONTROLLER_ILI9341, &lcd_drv);
+    scr_find_driver(SCREEN_CONTROLLER_ST7789, &lcd_drv);
     lcd_drv.init(&lcd_cfg);
-
+#if defined(CONFIG_LVGL_DRIVER_TOUCH_SCREEN_ENABLE)
     touch_panel_config_t touch_cfg = {
         .interface_spi = {
             .spi_bus = spi2_bus,
@@ -542,7 +543,7 @@ void app_main(void)
     touch_panel_find_driver(TOUCH_PANEL_CONTROLLER_XPT2046, &touch_drv);
     touch_drv.init(&touch_cfg);
     touch_drv.calibration_run(&lcd_drv, false);
-
+#endif
     /* Initialize LittlevGL GUI */
     lvgl_init(&lcd_drv, &touch_drv);
 
